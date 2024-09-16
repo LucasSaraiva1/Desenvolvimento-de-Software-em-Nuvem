@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Servir arquivos estáticos (Frontend)
-app.use(express.static(path.join(__dirname, '../frontend'), {
+app.use(express.static(path.join(__dirname, '../frontend/build'), {
   extensions: ['js', 'css', 'png', 'jpg'], 
   index: false // Desativa a capacidade de servir index.html automaticamente
 }));
@@ -40,16 +40,16 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
 app.get('/addCar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'addCar.html'));
+    res.sendFile(path.join(__dirname, '../frontend/build', 'addCar.html'));
 });
 
 app.get('/addUser', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'addUser.html'));
+    res.sendFile(path.join(__dirname, '../frontend/build', 'addUser.html'));
 });
 
 // Rota de login (aberta para todos)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
 });
 
 // Usar as rotas
