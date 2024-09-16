@@ -137,7 +137,7 @@
         });
 
         if (response.ok) {
-           window.location.href = 'home.html';
+           window.location.href = '/build/home.html';
         } else {
           const errorMessage = await response.text();
           alert(`Erro ao realizar login: ${errorMessage}`);
