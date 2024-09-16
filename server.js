@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const session = require('express-session'); // Para gerenciar sessões
-const { authenticateToken } = require('./middleware'); // Importar o middleware
+const session = require('express-session'); 
+const { authenticateToken } = require('./backend/middleware'); // Importar o middleware de 'backend'
 
 // Importar as rotas
-const userRoutes = require('./routes/userRoutes');
-const carRoutes = require('./routes/carRoutes');
+const userRoutes = require('./backend/routes/userRoutes'); // Rotas movidas para 'backend/routes'
+const carRoutes = require('./backend/routes/carRoutes');
 
 // Configuração do app
 const app = express();
@@ -16,21 +16,21 @@ const port = process.env.PORT || 3000;
 
 // Middleware de sessão
 app.use(session({
-  secret: 'seu_segredo_seguro', // Utilize uma string segura em produção
+  secret: 'seu_segredo_seguro', 
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false } // Defina como 'true' se estiver usando HTTPS
+  cookie: { secure: false } 
 }));
 
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
-// Caminho absoluto para a pasta 'Frontend'
-const frontendPath = path.join(__dirname, 'Frontend');
-
-// Servir arquivos estáticos da pasta 'Frontend'
-app.use(express.static(frontendPath));
+// Servir arquivos estáticos (Frontend)
+app.use(express.static(path.join(__dirname, 'public'), {
+  extensions: ['js', 'css', 'png', 'jpg'], 
+  index: false
+}));
 
 // Conectar ao MongoDB
 const mongoUri = 'mongodb+srv://lucasps6saraiva:vEZ8IrKk15orPlHV@nuvem.ayeyy.mongodb.net/?retryWrites=true&w=majority&appName=Nuvem';
@@ -38,24 +38,24 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB conectado'))
     .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
 
-// Rota de login (aberta para todos)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html')); // Usando o caminho correto
-});
-
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
 app.get('/addCar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(frontendPath, 'addCar.html'));
+    res.sendFile(path.join(__dirname, 'public', 'addCar.html'));
 });
 
 app.get('/addUser', authenticateToken, (req, res) => {
-    res.sendFile(path.join(frontendPath, 'addUser.html'));
+    res.sendFile(path.join(__dirname, 'public', 'addUser.html'));
+});
+
+// Rota de login (aberta para todos)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Usar as rotas
 app.use('/users', userRoutes);
 app.use('/cars', carRoutes);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static('uploads'));
 
 // Rota para fazer logoff
 app.get('/logoff', (req, res) => {
@@ -63,7 +63,7 @@ app.get('/logoff', (req, res) => {
         if (err) {
             return res.status(500).send('Erro ao fazer logoff.');
         }
-        res.redirect('/'); // Redireciona para a página de login (index.html)
+        res.redirect('/'); 
     });
 });
 
