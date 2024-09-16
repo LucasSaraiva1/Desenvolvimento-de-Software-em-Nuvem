@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <!-- Bootstrap CSS (local) -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .modal-header, .modal-footer {
+      justify-content: center;
+    }
+    .modal-body {
+      display: flex;
+      justify-content: space-around;
+    }
+  </style>
+</head>
+<body>
+  <!-- Verificação de Sessão -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        const sessionResponse = await fetch('http://localhost:3000/users/check-session');
+        if (sessionResponse.status !== 200) {
+          window.location.href = '/'; // Redirecionar para login se a sessão não estiver ativa
+        }
+      } catch (error) {
+        console.error('Erro ao verificar sessão:', error);
+        window.location.href = '/'; // Redirecionar para login em caso de erro
+      }
+    });
+  </script>
+
+  <!-- Modal -->
+  <div class="modal fade" id="selectionModal" tabindex="-1" aria-labelledby="selectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="selectionModalLabel">Selecione uma Opção</h5>
+        </div>
+        <div class="modal-body">
+          <button id="addUserBtn" type="button" class="btn btn-primary">Adicionar Usuários</button>
+          <button id="manageCarsBtn" type="button" class="btn btn-secondary">Adicionar/Consultar Carros</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (local) -->
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Exibir o modal automaticamente ao carregar a página
+    window.onload = function() {
+      var myModal = new bootstrap.Modal(document.getElementById('selectionModal'));
+      myModal.show();
+    };
+
+    // Redirecionar para a página de Adicionar Usuários
+    document.getElementById('addUserBtn').addEventListener('click', function() {
+      window.location.href = 'addUser.html'; // Substitua com o caminho correto
+    });
+
+    // Redirecionar para a página de Adicionar/Consultar Carros
+    document.getElementById('manageCarsBtn').addEventListener('click', function() {
+      window.location.href = 'addCar.html'; // Substitua com o caminho correto
+    });
+  </script>
+</body>
+</html>

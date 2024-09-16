@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adicionar Carro</title>
+  <!-- Bootstrap CSS (local) -->
+  <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #f8f9fa;
+      padding: 10px 20px;
+      border-bottom: 1px solid #dee2e6;
+      margin-bottom: 20px;
+    }
+    .header img {
+      height: 50px;
+    }
+    .car-image {
+      width: 100px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <img src="icon-unifor.svg" alt="Logo do Site">
+    <div>
+      <a href="/home.html" class="btn btn-outline-primary">Home</a>
+      <button class="btn btn-outline-danger" id="logoffBtn">Logoff</button>
+    </div>
+  </div>
+
+  <!-- Verificação de Autenticação -->
+  <script>
+    // Verificar autenticação
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const response = await fetch('/users/check-session');
+        
+        // Se o status for 401 (não autorizado), redireciona para a página de login
+        if (response.status === 401) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Erro ao verificar a sessão:', error);
+        window.location.href = '/'; // Em caso de erro, redireciona para a página de login
+      }
+    });
+  </script>
+
+  <!-- Formulário de Adição de Carros -->
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h2 class="text-center mb-4">Adicionar Carro</h2>
+        <div class="card shadow-lg">
+          <div class="card-body">
+            <form id="addCarForm" enctype="multipart/form-data">
+              <div class="mb-3">
+                <label for="nome" class="form-label">Nome do Carro</label>
+                <input type="text" class="form-control" id="nome" placeholder="Insira o nome do carro" required>
+              </div>
+              <div class="mb-3">
+                <label for="estoque" class="form-label">Estoque Disponível</label>
+                <input type="number" class="form-control" id="estoque" placeholder="Estoque disponível" required>
+              </div>
+              <div class="mb-3">
+                <label for="ano" class="form-label">Ano</label>
+                <input type="number" class="form-control" id="ano" placeholder="Ano do carro" required>
+              </div>
+              <div class="mb-3">
+                <label for="modelo" class="form-label">Modelo</label>
+                <input type="text" class="form-control" id="modelo" placeholder="Modelo do carro" required>
+              </div>
+              <div class="mb-3">
+                <label for="imagem" class="form-label">Imagem do Carro</label>
+                <input type="file" class="form-control" id="imagem" accept="image/*" required>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Adicionar Carro</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Carros -->
+  <div class="container my-5">
+    <h3 class="text-center mb-4">Carros Adicionados</h3>
+    <div id="carList" class="row justify-content-center">
+      <!-- A lista será preenchida aqui -->
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (local) -->
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Script para adicionar e listar carros -->
+  <script>
+    document.addEventListener('DOMContentLoaded', loadCars);
+
+    // Função para carregar carros já adicionados
+    async function loadCars() {
+      try {
+        const response = await fetch('http://localhost:3000/cars');
+        const cars = await response.json();
+        const carList = document.getElementById('carList');
+        carList.innerHTML = ''; // Limpa a lista antes de preencher
+
+        cars.forEach(car => {
+          const carCard = `
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <img src="${car.imagem}" class="card-img-top car-image" alt="${car.nome}">
+                <div class="card-body">
+                  <h5 class="card-title">${car.nome}</h5>
+                  <p class="card-text">Modelo: ${car.modelo} | Ano: ${car.ano}</p>
+                  <p class="card-text">Estoque: ${car.estoque}</p>
+                  <button class="btn btn-warning btn-sm" onclick="editCar('${car._id}')">Editar</button>
+                  <button class="btn btn-danger btn-sm" onclick="deleteCar('${car._id}')">Remover</button>
+                  <button class="btn btn-success btn-sm" onclick="updateStock('${car._id}')">Atualizar Estoque</button>
+                </div>
+              </div>
+            </div>`;
+          carList.innerHTML += carCard;
+        });
+      } catch (error) {
+        console.error('Erro ao carregar carros:', error);
+      }
+    }
+
+    // Formulário para adicionar um novo carro
+    document.getElementById('addCarForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+      formData.append('nome', document.getElementById('nome').value);
+      formData.append('estoque', document.getElementById('estoque').value);
+      formData.append('ano', document.getElementById('ano').value);
+      formData.append('modelo', document.getElementById('modelo').value);
+      formData.append('imagem', document.getElementById('imagem').files[0]);
+
+      try {
+        const response = await fetch('http://localhost:3000/cars', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          alert('Carro adicionado com sucesso!');
+          document.getElementById('addCarForm').reset();
+          loadCars(); // Recarrega a lista de carros após a adição
+        } else {
+          alert('Erro ao adicionar carro.');
+        }
+      } catch (error) {
+        console.error('Erro ao adicionar carro:', error);
+        alert('Erro ao adicionar carro.');
+      }
+    });
+
+    // Função para editar um carro
+    async function editCar(id) {
+      const nome = prompt('Insira o novo nome do carro:');
+      const estoque = prompt('Insira o novo estoque:');
+      const ano = prompt('Insira o novo ano:');
+      const modelo = prompt('Insira o novo modelo:');
+
+      if (!nome || !estoque || !ano || !modelo) {
+        alert('Todos os campos devem ser preenchidos!');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/cars/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ nome, estoque, ano, modelo }),
+        });
+
+        if (response.ok) {
+          alert('Carro editado com sucesso!');
+          loadCars(); // Recarrega a lista de carros
+        } else {
+          alert('Erro ao editar carro.');
+        }
+      } catch (error) {
+        console.error('Erro ao editar carro:', error);
+      }
+    }
+
+    // Função para remover um carro
+    async function deleteCar(id) {
+      if (confirm('Deseja realmente remover este carro?')) {
+        try {
+          const response = await fetch(`http://localhost:3000/cars/${id}`, {
+            method: 'DELETE',
+          });
+
+          if (response.ok) {
+            alert('Carro removido com sucesso!');
+            loadCars(); // Recarrega a lista de carros
+          } else {
+            alert('Erro ao remover carro.');
+          }
+        } catch (error) {
+          console.error('Erro ao remover carro:', error);
+        }
+      }
+    }
+
+    // Função para atualizar o estoque de um carro
+    async function updateStock(id) {
+      const estoque = prompt('Insira o novo estoque:');
+
+      if (!estoque) {
+        alert('O campo estoque deve ser preenchido!');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/cars/${id}/estoque`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ estoque }),
+        });
+
+        if (response.ok) {
+          alert('Estoque atualizado com sucesso!');
+          loadCars(); // Recarrega a lista de carros
+        } else {
+          alert('Erro ao atualizar o estoque.');
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar o estoque:', error);
+      }
+    }
+
+    // Função para o botão Logoff
+    document.getElementById('logoffBtn').addEventListener('click', function() {
+        window.location.href = '/users/logoff'; // Rota para destruir a sessão
+    });
+  </script>
+</body>
+</html>
