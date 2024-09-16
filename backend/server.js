@@ -26,11 +26,11 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(cors());
 
-// Servir arquivos estáticos (CSS, JS, imagens) da pasta 'Frontend' agora dentro de 'backend'
-app.use(express.static(path.join(__dirname, 'Frontend'), {
-  extensions: ['js', 'css', 'png', 'jpg'], // Serve apenas arquivos de mídia e estilo
-  index: false // Desativa a capacidade de servir index.html automaticamente
-}));
+// Caminho absoluto para a pasta 'Frontend'
+const frontendPath = path.join(__dirname, 'Frontend');
+
+// Servir arquivos estáticos da pasta 'Frontend'
+app.use(express.static(frontendPath));
 
 // Conectar ao MongoDB
 const mongoUri = 'mongodb+srv://lucasps6saraiva:vEZ8IrKk15orPlHV@nuvem.ayeyy.mongodb.net/?retryWrites=true&w=majority&appName=Nuvem';
@@ -38,24 +38,24 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB conectado'))
     .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
 
+// Rota de login (aberta para todos)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(frontendPath, 'index.html')); // Usando o caminho absoluto para o index.html
+});
+
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
 app.get('/addCar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'addCar.html'));
+    res.sendFile(path.join(frontendPath, 'addCar.html'));
 });
 
 app.get('/addUser', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'addUser.html'));
-});
-
-// Rota de login (aberta para todos)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
+    res.sendFile(path.join(frontendPath, 'addUser.html'));
 });
 
 // Usar as rotas
 app.use('/users', userRoutes);
 app.use('/cars', carRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rota para fazer logoff
 app.get('/logoff', (req, res) => {
