@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const session = require('express-session'); 
-const { authenticateToken } = require('./backend/middleware'); // Importar o middleware de 'backend'
+const { authenticateToken } = require('./middleware'); 
 
 // Importar as rotas
-const userRoutes = require('./backend/routes/userRoutes'); // Rotas movidas para 'backend/routes'
-const carRoutes = require('./backend/routes/carRoutes');
+const userRoutes = require('./routes/userRoutes');
+const carRoutes = require('./routes/carRoutes');
 
 // Configuração do app
 const app = express();
@@ -27,9 +27,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Servir arquivos estáticos (Frontend)
-app.use(express.static(path.join(__dirname, 'public'), {
+app.use(express.static(path.join(__dirname, '../frontend'), {
   extensions: ['js', 'css', 'png', 'jpg'], 
-  index: false
+  index: false // Desativa a capacidade de servir index.html automaticamente
 }));
 
 // Conectar ao MongoDB
@@ -40,22 +40,22 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
 app.get('/addCar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'addCar.html'));
+    res.sendFile(path.join(__dirname, '../frontend', 'addCar.html'));
 });
 
 app.get('/addUser', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'addUser.html'));
+    res.sendFile(path.join(__dirname, '../frontend', 'addUser.html'));
 });
 
 // Rota de login (aberta para todos)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
 });
 
 // Usar as rotas
 app.use('/users', userRoutes);
 app.use('/cars', carRoutes);
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Rota para fazer logoff
 app.get('/logoff', (req, res) => {
