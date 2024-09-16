@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
-const session = require('express-session'); // Adicionando express-session para gerenciar sessões
+const session = require('express-session'); // Para gerenciar sessões
 const { authenticateToken } = require('./middleware'); // Importar o middleware
 
 // Importar as rotas
@@ -40,7 +40,7 @@ mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
 
 // Rota de login (aberta para todos)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html')); // Usando o caminho absoluto para o index.html
+    res.sendFile(path.join(frontendPath, 'index.html')); // Usando o caminho correto
 });
 
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
