@@ -35,20 +35,32 @@
     </div>
   </div>
 
-  <!-- Verificação de Autenticação pela Sessão 
+  <!-- Verificação de Autenticação JWT -->
   <script>
     document.addEventListener('DOMContentLoaded', async function() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/'; // Redireciona para a página de login se o token não estiver presente
+        return;
+      }
+
       try {
-        const response = await fetch('/users/check-session');
+        const response = await fetch('/users/check-token', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}` // Envia o token no cabeçalho
+          }
+        });
+
         if (response.status !== 200) {
-          window.location.href = '/'; // Redireciona para a página de login se não houver sessão válida
+          window.location.href = '/'; // Redireciona para a página de login se o token for inválido
         }
       } catch (error) {
-        console.error('Erro ao verificar a sessão:', error);
+        console.error('Erro ao verificar o token:', error);
         window.location.href = '/'; // Redireciona para a página de login em caso de erro
       }
     });
-  </script> -->
+  </script>
 
   <!-- Formulário de Adição de Carros -->
   <div class="container my-5">
@@ -104,8 +116,13 @@
 
     // Função para carregar carros já adicionados
     async function loadCars() {
+      const token = localStorage.getItem('token');
       try {
-        const response = await fetch('/cars');
+        const response = await fetch('/cars', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         const cars = await response.json();
         const carList = document.getElementById('carList');
         carList.innerHTML = ''; // Limpa a lista antes de preencher
@@ -135,6 +152,7 @@
     // Formulário para adicionar um novo carro
     document.getElementById('addCarForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const token = localStorage.getItem('token');
 
       const formData = new FormData();
       formData.append('nome', document.getElementById('nome').value);
@@ -146,6 +164,9 @@
       try {
         const response = await fetch('/cars', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
           body: formData
         });
 
@@ -174,11 +195,13 @@
         return;
       }
 
+      const token = localStorage.getItem('token');
       try {
         const response = await fetch(`/cars/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({ nome, estoque, ano, modelo }),
         });
@@ -196,10 +219,14 @@
 
     // Função para remover um carro
     async function deleteCar(id) {
+      const token = localStorage.getItem('token');
       if (confirm('Deseja realmente remover este carro?')) {
         try {
           const response = await fetch(`/cars/${id}`, {
             method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
           });
 
           if (response.ok) {
@@ -223,11 +250,13 @@
         return;
       }
 
+      const token = localStorage.getItem('token');
       try {
         const response = await fetch(`/cars/${id}/estoque`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({ estoque }),
         });
@@ -245,13 +274,8 @@
 
     // Função para o botão Logoff
     document.getElementById('logoffBtn').addEventListener('click', function() {
-      fetch('/users/logoff')
-        .then(() => {
-          window.location.href = '/'; // Redireciona para a página de login após logoff
-        })
-        .catch(error => {
-          console.error('Erro ao fazer logoff:', error);
-        });
+      localStorage.removeItem('token'); // Remove o token JWT do localStorage
+      window.location.href = '/'; // Redireciona para a página de login
     });
   </script>
 </body>

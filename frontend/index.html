@@ -137,6 +137,8 @@
         });
 
         if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('token', data.token); // Armazena o token JWT no localStorage
           alert('Login realizado com sucesso!');
           window.location.href = '/home.html'; // Redireciona para home.html
         } else {
