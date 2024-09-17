@@ -139,6 +139,7 @@
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('token', data.token); // Armazena o token JWT no localStorage
+          alert('Login realizado com sucesso!');
           window.location.href = '/home.html'; // Redireciona para home.html
         } else {
           const errorMessage = await response.text();
@@ -146,7 +147,7 @@
         }
       } catch (error) {
         console.error('Erro ao realizar login:', error);
-        alert('Erro ao realizar login.');
+        alert('Erro ao realizar login. Por favor, tente novamente.');
       }
     });
   </script>

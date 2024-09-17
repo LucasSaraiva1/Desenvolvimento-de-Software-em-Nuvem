@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const Car = require('../models/Car');
+const { authenticateToken } = require('../middleware'); // Importar o middleware JWT
 
 // Configuração do Multer para upload de imagem
 const storage = multer.diskStorage({
@@ -16,8 +17,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Rota para adicionar um carro com upload de imagem
-router.post('/', upload.single('imagem'), async (req, res) => {
+// Rota para adicionar um carro com upload de imagem (Protegida por JWT)
+router.post('/', authenticateToken, upload.single('imagem'), async (req, res) => {
   try {
     const { nome, estoque, ano, modelo } = req.body;
     const imagem = req.file ? `/uploads/${req.file.filename}` : null;
@@ -42,8 +43,8 @@ router.post('/', upload.single('imagem'), async (req, res) => {
   }
 });
 
-// Rota para listar todos os carros
-router.get('/', async (req, res) => {
+// Rota para listar todos os carros (Protegida por JWT)
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const carros = await Car.find();
     res.status(200).send(carros);
@@ -52,8 +53,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Rota para remover um carro
-router.delete('/:id', async (req, res) => {
+// Rota para remover um carro (Protegida por JWT)
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const carro = await Car.findByIdAndDelete(id);
@@ -66,8 +67,8 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Rota para editar um carro
-router.put('/:id', async (req, res) => {
+// Rota para editar um carro (Protegida por JWT)
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { nome, estoque, ano, modelo } = req.body;
@@ -81,8 +82,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Rota para atualizar o estoque de um carro
-router.patch('/:id/estoque', async (req, res) => {
+// Rota para atualizar o estoque de um carro (Protegida por JWT)
+router.patch('/:id/estoque', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { estoque } = req.body;

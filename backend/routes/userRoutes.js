@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken'); // Importar JWT
 const User = require('../models/User');
 const { authenticateToken } = require('../middleware'); // Importar o middleware
 
+const secretKey = 'seu_segredo_jwt'; // Defina uma chave secreta segura
+
 // Rota para criar um usuário (apenas usuários autenticados podem acessar)
 router.post('/', authenticateToken, async (req, res) => {
     try {
@@ -44,7 +46,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Login bem-sucedido: Gerar o token JWT
-        const token = jwt.sign({ userId: user._id }, 'seu_segredo_jwt', { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
 
         // Retornar o token JWT ao cliente
         res.json({ token });
@@ -56,18 +58,17 @@ router.post('/login', async (req, res) => {
 
 // Rota para exibir a página de adicionar usuário (protegida pelo middleware)
 router.get('/addUser', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend', 'addUser.html'));
+    res.sendFile(path.join(__dirname, '../frontend', 'addUser.html')); // Certifique-se de que o caminho esteja correto
 });
 
 // Rota para exibir a página de adicionar/consultar carros (protegida pelo middleware)
 router.get('/addCar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, '../Frontend', 'addCar.html'));
+    res.sendFile(path.join(__dirname, '../frontend', 'addCar.html')); // Certifique-se de que o caminho esteja correto
 });
 
-// Rota de logoff (Como estamos usando JWT, não precisamos mais de sessão)
-// Pode apenas apagar o token do lado do cliente
+// Rota de logoff (Com JWT, basta o cliente remover o token)
 router.get('/logoff', (req, res) => {
-    res.send('Logoff bem-sucedido.');
+    res.send('Logoff bem-sucedido. Apague o token no cliente.');
 });
 
 module.exports = router;

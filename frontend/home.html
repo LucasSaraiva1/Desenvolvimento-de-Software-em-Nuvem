@@ -22,6 +22,7 @@
     document.addEventListener('DOMContentLoaded', async function () {
       const token = localStorage.getItem('token');
       if (!token) {
+        alert('Você não está autenticado. Faça login.');
         window.location.href = '/'; // Redireciona para login se não houver token
         return;
       }
@@ -35,10 +36,12 @@
         });
 
         if (response.status !== 200) {
+          alert('Sua sessão expirou. Faça login novamente.');
           window.location.href = '/'; // Redireciona para login se o token não for válido
         }
       } catch (error) {
         console.error('Erro ao verificar o token:', error);
+        alert('Erro de autenticação. Faça login novamente.');
         window.location.href = '/'; // Redireciona para login em caso de erro
       }
     });

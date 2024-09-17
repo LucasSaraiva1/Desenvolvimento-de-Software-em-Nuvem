@@ -7,15 +7,15 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-        // Se não houver token, redireciona para a página de login
-        return res.redirect('/');
+        // Se não houver token, envia uma resposta 401 Unauthorized
+        return res.status(401).json({ message: 'Acesso negado. Nenhum token fornecido.' });
     }
 
     // Verificar o token
     jwt.verify(token, secretKey, (err, user) => {
         if (err) {
-            // Se o token for inválido ou expirado
-            return res.redirect('/');
+            // Se o token for inválido ou expirado, envia uma resposta 403 Forbidden
+            return res.status(403).json({ message: 'Token inválido ou expirado.' });
         }
 
         // Se o token for válido, anexamos os dados do usuário ao req
