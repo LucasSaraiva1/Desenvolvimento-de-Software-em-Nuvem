@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
 
 // Conectar ao MongoDB
 const mongoUri = 'mongodb+srv://lucasps6saraiva:vEZ8IrKk15orPlHV@nuvem.ayeyy.mongodb.net/?retryWrites=true&w=majority&appName=Nuvem';
-mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+
+mongoose.connect(mongoUri)
     .then(() => console.log('MongoDB conectado'))
     .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
 
