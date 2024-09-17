@@ -137,7 +137,9 @@
         });
 
         if (response.ok) {
-           window.location.href = '/home.html';
+          const data = await response.json();
+          localStorage.setItem('token', data.token); // Armazena o token JWT no localStorage
+          window.location.href = '/home.html'; // Redireciona para home.html
         } else {
           const errorMessage = await response.text();
           alert(`Erro ao realizar login: ${errorMessage}`);
@@ -145,7 +147,6 @@
       } catch (error) {
         console.error('Erro ao realizar login:', error);
         alert('Erro ao realizar login.');
-        
       }
     });
   </script>
