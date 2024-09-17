@@ -55,7 +55,7 @@ router.post('/login', async (req, res) => {
       req.session.userId = user._id;
 
       // Redirecionar para a página home
-      res.redirect('/home.html'); // Redireciona para home.html na pasta Frontend
+      res.redirect('/build/home.html'); // Redireciona para home.html na pasta Frontend
     } catch (error) {
       console.error('Erro no login:', error);
       res.status(500).send('Erro no servidor.');
