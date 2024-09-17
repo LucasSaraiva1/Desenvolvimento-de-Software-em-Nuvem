@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
+const session = require('express-session'); // Adicionar express-session para gerenciar as sessões
 const { authenticateToken } = require('./middleware'); // Importar o middleware JWT
 
 // Importar as rotas
@@ -12,6 +13,14 @@ const carRoutes = require('./routes/carRoutes');
 // Configuração do app
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configuração da sessão
+app.use(session({
+  secret: 'seu_segredo_seguro', // Defina uma chave secreta segura
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false } // Defina como true se estiver usando HTTPS
+}));
 
 // Middleware
 app.use(bodyParser.json());
@@ -25,7 +34,6 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
 
 // Conectar ao MongoDB
 const mongoUri = 'mongodb+srv://lucasps6saraiva:vEZ8IrKk15orPlHV@nuvem.ayeyy.mongodb.net/?retryWrites=true&w=majority&appName=Nuvem';
-
 mongoose.connect(mongoUri)
     .then(() => console.log('MongoDB conectado'))
     .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));

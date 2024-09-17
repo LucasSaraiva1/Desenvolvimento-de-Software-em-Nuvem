@@ -22,29 +22,17 @@
   </style>
 </head>
 <body>
-  <!-- Verificação de Autenticação JWT -->
+  <!-- Verificação de Sessão -->
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        window.location.href = '/'; // Redirecionar para login se não houver token
-        return;
-      }
-
       try {
-        const response = await fetch('/users/check-token', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}` // Envia o token no cabeçalho da requisição
-          }
-        });
-
+        const response = await fetch('/users/check-session'); // Verifica se a sessão está ativa
         if (response.status !== 200) {
-          window.location.href = '/'; // Redirecionar para login se o token não for válido
+          window.location.href = '/'; // Redireciona para login se a sessão não for válida
         }
       } catch (error) {
-        console.error('Erro ao verificar o token:', error);
-        window.location.href = '/'; // Redirecionar para login em caso de erro
+        console.error('Erro ao verificar a sessão:', error);
+        window.location.href = '/'; // Redireciona para login em caso de erro
       }
     });
   </script>
@@ -104,13 +92,8 @@
 
     // Função para carregar usuários já adicionados
     async function loadUsers() {
-      const token = localStorage.getItem('token');
       try {
-        const response = await fetch('/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        const response = await fetch('/users'); // Não precisa de token no header, a sessão já foi verificada
         const users = await response.json();
         const userList = document.getElementById('userList');
         userList.innerHTML = ''; // Limpa a lista antes de preencher
@@ -135,7 +118,6 @@
     // Formulário para adicionar um novo usuário
     document.getElementById('addUserForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const token = localStorage.getItem('token');
 
       const nome = document.getElementById('nome').value;
       const email = document.getElementById('email').value;
@@ -145,8 +127,7 @@
         const response = await fetch('/users', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ nome, email, senha })
         });
@@ -166,8 +147,7 @@
 
     // Função para o botão Logoff
     document.getElementById('logoffBtn').addEventListener('click', function() {
-      localStorage.removeItem('token'); // Remove o token JWT do localStorage
-      window.location.href = '/'; // Redireciona para a página de login
+      window.location.href = '/users/logoff'; // Redireciona para o logoff no backend
     });
   </script>
 </body>

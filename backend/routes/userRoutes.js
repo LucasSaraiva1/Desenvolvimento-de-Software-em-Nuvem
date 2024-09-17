@@ -48,8 +48,11 @@ router.post('/login', async (req, res) => {
         // Login bem-sucedido: Gerar o token JWT
         const token = jwt.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
 
-        // Retornar o token JWT ao cliente
-        res.json({ token });
+        // Armazenar o token JWT na sessão
+        req.session.token = token;
+
+        // Retornar uma mensagem de sucesso
+        res.status(200).send('Login bem-sucedido.');
     } catch (error) {
         console.error('Erro no login:', error);
         res.status(500).send('Erro no servidor.');
@@ -68,7 +71,13 @@ router.get('/addCar', authenticateToken, (req, res) => {
 
 // Rota de logoff (Com JWT, basta o cliente remover o token)
 router.get('/logoff', (req, res) => {
-    res.send('Logoff bem-sucedido. Apague o token no cliente.');
+    // Destruir a sessão
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Erro ao fazer logoff.');
+        }
+        res.status(200).send('Logoff bem-sucedido.');
+    });
 });
 
 module.exports = router;
