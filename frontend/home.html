@@ -17,22 +17,22 @@
   </style>
 </head>
 <body>
-  <!-- Verificação de Sessão (ao invés do token JWT) -->
+  <!-- Verificação de Sessão (ao invés do token JWT) 
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       try {
-        const response = await fetch('/users/check-session'); // Verifica se a sessão está ativa
-        if (response.status !== 200) {
+        //const response = await fetch('/users/check-session'); // Verifica se a sessão está ativa
+        //if (response.status !== 200) {
           alert('Sua sessão expirou. Faça login novamente.');
-          window.location.href = '/'; // Redireciona para login se a sessão não for válida
-        }
+          //window.location.href = '/'; // Redireciona para login se a sessão não for válida
+        //}
       } catch (error) {
         console.error('Erro ao verificar a sessão:', error);
         alert('Erro de autenticação. Faça login novamente.');
         window.location.href = '/'; // Redireciona para login em caso de erro
       }
     });
-  </script>
+  </script>-->
 
   <!-- Modal -->
   <div class="modal fade" id="selectionModal" tabindex="-1" aria-labelledby="selectionModalLabel" aria-hidden="true">
