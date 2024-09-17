@@ -21,7 +21,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       try {
-        const sessionResponse = await fetch('http://localhost:3000/users/check-session');
+        const sessionResponse = await fetch('/users/check-session');
         if (sessionResponse.status !== 200) {
           window.location.href = '/'; // Redirecionar para login se a sessão não estiver ativa
         }
