@@ -1,17 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path'); // Importar o módulo 'path' para servir arquivos estáticos
+const path = require('path');
+const jwt = require('jsonwebtoken'); // Importar JWT
 const User = require('../models/User');
 const { authenticateToken } = require('../middleware'); // Importar o middleware
-
-// Verificar se a sessão está ativa
-router.get('/check-session', (req, res) => {
-  if (req.session && req.session.userId) {
-    res.sendStatus(200); // Sessão ativa
-  } else {
-    res.sendStatus(401); // Não autorizado
-  }
-});
 
 // Rota para criar um usuário (apenas usuários autenticados podem acessar)
 router.post('/', authenticateToken, async (req, res) => {
@@ -38,27 +30,27 @@ router.get('/', authenticateToken, async (req, res) => {
 // Rota de login (aberta para todos)
 router.post('/login', async (req, res) => {
     try {
-      const { email, senha } = req.body;
+        const { email, senha } = req.body;
 
-      // Verifique se o e-mail existe
-      const user = await User.findOne({ email });
-      if (!user) {
-        return res.status(400).send('Usuário não encontrado.');
-      }
+        // Verifique se o e-mail existe
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send('Usuário não encontrado.');
+        }
 
-      // Verificar se a senha está correta
-      if (senha !== user.senha) {
-        return res.status(400).send('Senha incorreta.');
-      }
+        // Verificar se a senha está correta
+        if (senha !== user.senha) {
+            return res.status(400).send('Senha incorreta.');
+        }
 
-      // Login bem-sucedido: Crie a sessão para o usuário
-      req.session.userId = user._id;
+        // Login bem-sucedido: Gerar o token JWT
+        const token = jwt.sign({ userId: user._id }, 'seu_segredo_jwt', { expiresIn: '1h' });
 
-      // Redirecionar para a página home
-      res.redirect('/home.html'); // Redireciona para home.html na pasta Frontend
+        // Retornar o token JWT ao cliente
+        res.json({ token });
     } catch (error) {
-      console.error('Erro no login:', error);
-      res.status(500).send('Erro no servidor.');
+        console.error('Erro no login:', error);
+        res.status(500).send('Erro no servidor.');
     }
 });
 
@@ -72,14 +64,10 @@ router.get('/addCar', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, '../Frontend', 'addCar.html'));
 });
 
-// Rota de logoff
+// Rota de logoff (Como estamos usando JWT, não precisamos mais de sessão)
+// Pode apenas apagar o token do lado do cliente
 router.get('/logoff', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).send('Erro ao fazer logoff.');
-        }
-        res.redirect('/'); // Redireciona para a página de login (index.html)
-    });
+    res.send('Logoff bem-sucedido.');
 });
 
 module.exports = router;
