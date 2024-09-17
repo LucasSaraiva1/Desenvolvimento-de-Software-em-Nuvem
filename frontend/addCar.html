@@ -108,7 +108,7 @@
     // Função para carregar carros já adicionados
     async function loadCars() {
       try {
-        const response = await fetch('http://localhost:3000/cars');
+        const response = await fetch('/cars');
         const cars = await response.json();
         const carList = document.getElementById('carList');
         carList.innerHTML = ''; // Limpa a lista antes de preencher
@@ -147,7 +147,7 @@
       formData.append('imagem', document.getElementById('imagem').files[0]);
 
       try {
-        const response = await fetch('http://localhost:3000/cars', {
+        const response = await fetch('/cars', {
           method: 'POST',
           body: formData
         });
@@ -178,7 +178,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/cars/${id}`, {
+        const response = await fetch(`/cars/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -201,7 +201,7 @@
     async function deleteCar(id) {
       if (confirm('Deseja realmente remover este carro?')) {
         try {
-          const response = await fetch(`http://localhost:3000/cars/${id}`, {
+          const response = await fetch(`/cars/${id}`, {
             method: 'DELETE',
           });
 
@@ -227,7 +227,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/cars/${id}/estoque`, {
+        const response = await fetch(`/cars/${id}/estoque`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
