@@ -128,7 +128,7 @@
       const password = document.getElementById('form3Example4').value;
 
       try {
-        const response = await fetch('/users/login', {
+        const response = await fetch('http://localhost:3000/users/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -137,17 +137,14 @@
         });
 
         if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem('token', data.token); // Armazena o token JWT no localStorage
-          alert('Login realizado com sucesso!');
-          window.location.href = '/home.html'; // Redireciona para home.html
+           window.location.href = 'home.html';
         } else {
           const errorMessage = await response.text();
           alert(`Erro ao realizar login: ${errorMessage}`);
         }
       } catch (error) {
         console.error('Erro ao realizar login:', error);
-        alert('Erro ao realizar login. Por favor, tente novamente.');
+        alert('Erro ao realizar login.');
       }
     });
   </script>

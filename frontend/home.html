@@ -17,32 +17,17 @@
   </style>
 </head>
 <body>
-  <!-- Verificação de Autenticação JWT -->
+  <!-- Verificação de Sessão -->
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Você não está autenticado. Faça login.');
-        window.location.href = '/'; // Redireciona para login se não houver token
-        return;
-      }
-
       try {
-        const response = await fetch('/users/check-token', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}` // Envia o token no cabeçalho da requisição
-          }
-        });
-
-        if (response.status !== 200) {
-          alert('Sua sessão expirou. Faça login novamente.');
-          window.location.href = '/'; // Redireciona para login se o token não for válido
+        const sessionResponse = await fetch('http://localhost:3000/users/check-session');
+        if (sessionResponse.status !== 200) {
+          window.location.href = '/'; // Redirecionar para login se a sessão não estiver ativa
         }
       } catch (error) {
-        console.error('Erro ao verificar o token:', error);
-        alert('Erro de autenticação. Faça login novamente.');
-        window.location.href = '/'; // Redireciona para login em caso de erro
+        console.error('Erro ao verificar sessão:', error);
+        window.location.href = '/'; // Redirecionar para login em caso de erro
       }
     });
   </script>
