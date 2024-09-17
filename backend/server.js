@@ -24,10 +24,10 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
 }));
 
 // Conectar ao MongoDB
-const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/nuvem'; // Usar variável de ambiente para MongoDB URI
+const mongoUri = 'mongodb+srv://lucasps6saraiva:vEZ8IrKk15orPlHV@nuvem.ayeyy.mongodb.net/?retryWrites=true&w=majority&appName=Nuvem';
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB conectado'))
-  .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
+    .then(() => console.log('MongoDB conectado'))
+    .catch(err => console.error('Erro ao conectar ao MongoDB:', err.message));
 
 // Rotas protegidas para servir os arquivos HTML (addCar.html, addUser.html)
 app.get('/addCar', authenticateToken, (req, res) => {
